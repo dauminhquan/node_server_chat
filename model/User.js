@@ -19,6 +19,10 @@ var UserSchema = new Schema({
         required: true,
         alias: 'n'
     },
+    avatar: {
+        type: String,
+        default: 'https://scontent.fhan2-1.fna.fbcdn.net/v/t1.0-9/39933181_976704199167164_8345605060855595008_n.jpg?_nc_cat=0&oh=5c4e286a07c7e016f868f593e4839bce&oe=5C3348EA'
+    },
     password: {
         type: String,
         required: true
@@ -53,6 +57,12 @@ var UserSchema = new Schema({
         ref: 'Company',
         required: true
     },
+    groups: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Group'
+        }
+    ],
     users_block: [
         {
             type: Schema.Types.ObjectId,

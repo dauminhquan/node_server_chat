@@ -1,10 +1,11 @@
 let express = require('express');
-const User = require('./../../model/User')
+const Project = require('./../../model/Project')
 const Company = require('./../../model/Company')
+const User = require('./../../model/User')
 let router = express.Router();
 router.get('/', function(req, res, next) {
 
-    User.find({},function (err,docs) {
+    Project.find({},function (err,docs) {
         if(err)
         {
             res.json(err)
@@ -15,21 +16,8 @@ router.get('/', function(req, res, next) {
     })
 
 });
-router.get('/info',function (req,res,next) {
-    let token = req.headers['auth-token']
-    User.findOne({token: token},function (err,user) {
-        if(err)
-        {
-            next(err)
-        }
-        else{
-            user  = user.toJSON()
-            res.json(user)
-        }
-    })
-})
 router.get('/info/:id/',function (req,res,next) {
-    User.findOne({id : req.params.id}).populate('company').exec(function (err,doc) {
+    Project.findOne({id : req.params.id}).exec(function (err,doc) {
         if(err){
             res.json(err)
         }
@@ -38,30 +26,8 @@ router.get('/info/:id/',function (req,res,next) {
         }
     })
 })
-router.get('/groups',function (req,res,next) {
-    let token = req.headers['auth-token']
-    User.findOne({token : token}).populate({
-        path    : 'groups',
-        populate: [
-            {
-                path: 'members',
-                select: 'username avatar id _id'
-            }
-        ]
-    }).exec(function (err,doc) {
-        if(err){
-            res.status(500)
-            res.json(err)
-        }
-        else{
-            res.json({
-                groups: doc.groups
-            })
-        }
-    })
-})
 router.put('/:id/edit',function (req,res,next) {
-    User.findOne({id : req.params.id}).populate('company').exec(function (err,doc) {
+    Project.findOne({id : req.params.id}).exec(function (err,doc) {
         if(err){
             res.json(err)
         }
@@ -88,30 +54,41 @@ router.put('/:id/edit',function (req,res,next) {
     })
 })
 router.post('/registration',function (req,res,next) {
-    var user = new User(req.body)
-    user.save(function (err,info) {
+    User.findOne({token: req.headers['auth-token']},function (err,user) {
         if(err)
         {
-            res.status(500)
-            res.json(err)
+            next(err)
         }
         else{
-            Company.findById(req.body.company,function (err,doc) {
+            let body = req.body
+            body.members = []
+            body.members.push(user._id)
+            let project = new Project(body)
+            project.save(function (err,info) {
                 if(err)
                 {
                     res.status(500)
                     res.json(err)
                 }
-                else {
-                    doc.members.push(info._id)
-                    doc.save(function (err,f) {
+                else{
+                    Company.findById(req.body.company,function (err,doc) {
                         if(err)
                         {
                             res.status(500)
                             res.json(err)
                         }
-                        else{
-                            res.json(info)
+                        else {
+                            doc.projects.push(info._id)
+                            doc.save(function (err,f) {
+                                if(err)
+                                {
+                                    res.status(500)
+                                    res.json(err)
+                                }
+                                else{
+                                    res.json(info)
+                                }
+                            })
                         }
                     })
                 }

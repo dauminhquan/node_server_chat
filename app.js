@@ -13,6 +13,10 @@ db.init(config);
 io.on('connection',function(socket){
     console.log('1 client vừa kết nối')
 })
+app.use(function (req,res,next) {
+    res.io = io
+    next()
+})
 // All Router
 // app.use(function(req, res, next){
 //     // console.log(req.headers)

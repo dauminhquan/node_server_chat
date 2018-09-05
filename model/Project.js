@@ -11,6 +11,11 @@ var ProjectSchema = new Schema({
         min: 1,
         autoIncrement: true
     },
+    name: {
+        type:String,
+        required: true,
+        index: true
+    },
     detail:  {
         type: String,
         required: true,
@@ -18,7 +23,8 @@ var ProjectSchema = new Schema({
     },
     status: {
         type: String,
-        match: ['coming_soon','opening','resolved','cancel','closed'],
+        enum: ['coming_soon','opening','resolved','cancel','closed'],
+        default: 'coming_soon'
 
     },
     started_at: {
@@ -29,7 +35,7 @@ var ProjectSchema = new Schema({
     ended_at: {
         type: Date
     },
-    member: [
+    members: [
         {
             type: Schema.Types.ObjectId,
             ref: 'User',
@@ -39,10 +45,10 @@ var ProjectSchema = new Schema({
     company: {
         type: Schema.Types.ObjectId,
         ref: 'Company',
-        unique: true
+        index: true,
+        required: true
     },
 });
-
 const Project = mongoose.model('Project', ProjectSchema);
 autoIncrement.initialize(mongoose.connection);
 ProjectSchema.plugin(autoIncrement.plugin, { model: 'Project', field: 'id' })

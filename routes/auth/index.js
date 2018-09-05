@@ -21,8 +21,10 @@ router.post('/login', function(req, res, next) {
                         res.json(null)
                     }
                     else{
+                        let user = doc.toJSON()
+                        delete user.password
                         res.json({
-                            token: doc.token
+                            user: user
                         })
                     }
                 })
@@ -32,6 +34,37 @@ router.post('/login', function(req, res, next) {
 
 });
 router.post('/auth',function (req,res,next) {
-    res.send('ok')
+    let token = req.headers['Auth-Token']
+
+    if(token == null || token == undefined)
+    {
+        res.status(403)
+        res.json({
+            auth: 'Not Accept'
+        })
+    }
+    else {
+        User.findOne({token: token},function (err,user) {
+            if(err)
+            {
+                next(err)
+            }
+            else{
+                if(user == null)
+                {
+                    res.status(406)
+                    res.json({
+                        auth: 'Not Accept'
+                    })
+                }
+                else{
+                    res.json({
+                        auth: 'Accepted',
+                        user:user
+                    })
+                }
+            }
+        })
+    }
 })
 module.exports = router;

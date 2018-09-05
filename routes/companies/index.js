@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 
 });
 router.post('/registration',function (req,res,next) {
-    var company = new Company(req.query)
+    var company = new Company(req.body)
     company.save(function (err,info) {
         if(err)
         {

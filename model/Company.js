@@ -42,21 +42,21 @@ var CompanySchema = new Schema({
     members: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'Users',
             unique: true
         }
     ],
     projects: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Project',
+            ref: 'Projects',
             unique: true
         }
     ],
     groups: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Group',
+            ref: 'Groups',
             unique: true
         }
     ]

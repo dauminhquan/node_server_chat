@@ -16,11 +16,12 @@ var MessageSchema = new Schema({
         required: true
     },
     contentText: {
-      type:String
+      type:String,
+        required: true
     },
     type:{
         type: String,
-        match: ['image','file','string'],
+        enum: ['image','file','string'],
         default: 'string'
     },
     user:  {
@@ -31,7 +32,11 @@ var MessageSchema = new Schema({
     group: {
         type: Schema.Types.ObjectId,
         ref: 'Group',
-        required: true
+        required: true,
+    },
+    created_at: {
+        type: Date,
+        default: new Date()
     }
 });
 
