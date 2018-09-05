@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+    <script src="socket.io/socket.io.js"></script>
+  </head>
+  <body>
+  TEST PAGE
+  <script>
+      let socket = io();
+      socket.emit('online-user', {'id_user':100});
+      socket.emit('join-group', {'id_group':"5b0bbb3b5b7fdc0f9cfff434"});
+      socket.emit('push-group', {'id_group':"5b0bbb3b5b7fdc0f9cfff434", 'id_friend': 102});
+      socket.on('push-on-group', (data) => {
+          console.log(data);
+      });
+      socket.emit('chat-one', {'to_id_user':101, 'message':'day la hungpq', 'type':'text'});
+
+  </script>
+  </body>
+</html>
