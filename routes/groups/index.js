@@ -3,6 +3,8 @@ const Group = require('./../../model/Group')
 const Project = require('./../../model/Project')
 const User = require('./../../model/User')
 const Message = require('./../../model/Message')
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 let router = express.Router();
 router.get('/', function(req, res, next) {
 
@@ -16,44 +18,6 @@ router.get('/', function(req, res, next) {
         }
     })
 
-})
-router.post('/',function (req,res,next) {
-    let group = new Group(req.body)
-    group.save(function (err,group) {
-        if(err)
-        {
-            next(err)
-        }
-        else {
-            // res.json(group)
-            let mem = User.findOne({token: req.headers['auth-token']},function (err,user) {
-                if(err)
-                {
-                    next(err)
-                }
-                else {
-                    group.members.push(user._id)
-                    group.save(function (err,doc) {
-                        if(err)
-                        {
-                            next(err)
-                        }
-                        else{
-                            user.groups.push(group._id)
-                            user.save(function (err,doc) {
-                                if(err)
-                                {
-                                    next(err)
-                                }else {
-                                    res.json(group)
-                                }
-                            })
-                        }
-                    })
-                }
-            })
-        }
-    })
 })
 router.get('/info:id',function (req,res,next) {
     Group.findOne({id : req.params.id}).populate('project').exec(function (err,doc) {
@@ -99,6 +63,111 @@ router.get('/:id/messages',function (req,res,next) {
             else{
                 res.json(messages)
             }
+    })
+})
+router.post('/',function (req,res,next) {
+    let members = []
+    User.findOne({token: req.headers['auth-token']},function (err,user) {
+        if(err)
+        {
+            next(err)
+        }
+        else{
+            members.push(user._id)
+            let body = req.body
+            body.members = members
+            let group = new Group(body)
+            group.save(function (err,doc) {
+                if(err)
+                {
+                    next(err)
+                }
+                else{
+                    user.groups.push(group._id)
+                    user.save(function (err) {
+                        if(err)
+                        {
+                            next(err)
+                        }
+                        else{
+                            res.json(doc)
+                        }
+                    })
+                }
+            })
+        }
+    })
+})
+router.post('/get-out/:id',function (req,res,next) {
+    User.findOne({token: req.headers['auth-token']},function (err,user) {
+        if(err)
+        {
+            next(err)
+        }
+        else{
+            Group.findOne({id: req.params.id},function (err,group) {
+                if(err)
+                {
+                    next(err)
+                }
+                else{
+                    group.members =  group.members.filter(mem => {
+                        return !mem.equals(user._id)
+                    })
+                    group.save(function (err,doc) {
+                        if(err)
+                        {
+                            next(err)
+                        }
+                        else {
+                            user.groups = user.groups.filter(item => {
+                                return !item.equals(group._id)
+                            })
+                            user.save(function (err) {
+                                if(err)
+                                {
+                                    next(err)
+                                }
+                                else{
+                                    if(group.members.length == 0)
+                                    {
+                                        Group.deleteOne({ id: group.id }, function (err) {
+                                            if (err)
+                                            {
+                                                next(err);
+                                            }
+                                            else{
+                                                Message.deleteMany({group: Schema.Types.Object(group._id)},function (err) {
+                                                    if(err)
+                                                    {
+                                                        next(err)
+                                                    }
+                                                    else{
+                                                        User.updateMany({groups: Schema.Types.Object(group._id)}, { $pullAll: {groups: [Schema.Types.Object(group._id)] } } ,function(err){
+                                                            if(err)
+                                                            {
+                                                                next(err)
+                                                            }
+                                                            else{
+                                                                res.json({})
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                        });
+                                    }
+                                    else{
+                                        res.json({})
+                                    }
+                                }
+                            })
+
+                        }
+                    })
+                }
+            })
+        }
     })
 })
 module.exports = router;

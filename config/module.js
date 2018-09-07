@@ -17,7 +17,7 @@ modules.init = app => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     var whitelist = ['http://localhost:8080']
-    var openUrl = ['/login','/users/registration']
+    var openUrl = ['/login','/users/registration','/companies/registration']
     var corsOptions = {
         // origin: function (origin, callback) {
         //     console.log(origin)
@@ -46,7 +46,7 @@ modules.init = app => {
                     {
                         res.status(403)
                         res.json({
-                            auth: 'Accept Denied'
+                            auth: 'Auth Denied'
                         })
                     }
                     else {

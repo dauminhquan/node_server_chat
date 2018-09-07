@@ -30,7 +30,7 @@ var ProjectSchema = new Schema({
     started_at: {
         type: Date,
         required: true,
-        default: new Date()
+        default: Date.now
     },
     ended_at: {
         type: Date

@@ -1,4 +1,6 @@
 let express = require('express');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 const User = require('./../../model/User')
 const Company = require('./../../model/Company')
 let router = express.Router();
@@ -92,15 +94,22 @@ router.post('/registration',function (req,res,next) {
     user.save(function (err,info) {
         if(err)
         {
-            res.status(500)
-            res.json(err)
+            next(err)
         }
         else{
             Company.findById(req.body.company,function (err,doc) {
                 if(err)
                 {
-                    res.status(500)
-                    res.json(err)
+                    User.delete({id: user.id},function (err2) {
+                        if(err2)
+                        {
+                            next(err2)
+                        }
+                        else{
+                            next(err)
+                        }
+                    })
+
                 }
                 else {
                     doc.members.push(info._id)

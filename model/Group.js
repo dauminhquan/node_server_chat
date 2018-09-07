@@ -24,19 +24,12 @@ var GroupSchema = new Schema({
     members: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'User',
-            index: {
-                unique: true,
-            },
+            ref: 'User'
         }
     ],
-    project: {
-        type: Schema.Types.ObjectId,
-        ref: 'Project'
-    },
     created_at: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
     invites_user: [
         {
