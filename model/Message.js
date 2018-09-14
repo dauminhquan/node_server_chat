@@ -1,6 +1,7 @@
 const autoIncrement = require('mongoose-auto-increment');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema
+const mongoosePaginate = require('mongoose-paginate')
 var MessageSchema = new Schema({
     id: {
         type: Number,
@@ -26,7 +27,7 @@ var MessageSchema = new Schema({
     },
     user:  {
         type: Schema.Types.ObjectId,
-        ref: 'Message',
+        ref: 'User',
         required: true
     },
     group: {
@@ -37,10 +38,13 @@ var MessageSchema = new Schema({
     created_at: {
         type: Date,
         default: Date.now
+    },
+    location: {
+        type: String
     }
 });
 
-
+MessageSchema.plugin(mongoosePaginate)
 const Message = mongoose.model('Message', MessageSchema);
 autoIncrement.initialize(mongoose.connection);
 MessageSchema.plugin(autoIncrement.plugin, { model: 'Message', field: 'id' });

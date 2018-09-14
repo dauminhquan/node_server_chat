@@ -22,7 +22,7 @@ router.get('/info',function (req,res,next) {
     User.findOne({token: token},function (err,user) {
         if(err)
         {
-            next(err)
+            return next(err)
         }
         else{
             user  = user.toJSON()
@@ -94,7 +94,7 @@ router.post('/registration',function (req,res,next) {
     user.save(function (err,info) {
         if(err)
         {
-            next(err)
+            return next(err)
         }
         else{
             Company.findById(req.body.company,function (err,doc) {
@@ -106,7 +106,7 @@ router.post('/registration',function (req,res,next) {
                             next(err2)
                         }
                         else{
-                            next(err)
+                            return next(err)
                         }
                     })
 

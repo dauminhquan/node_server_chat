@@ -42,7 +42,11 @@ var GroupSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'User'
         }
-    ]
+    ],
+    owner:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 });
 const Group = mongoose.model('Group', GroupSchema);
 autoIncrement.initialize(mongoose.connection);

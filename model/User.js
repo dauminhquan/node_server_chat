@@ -62,7 +62,11 @@ var UserSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'Group',
-            unique: true
+            unique: true,
+            message_readed: {
+                type: Schema.Types.ObjectId,
+                ref: 'Message'
+            }
         }
     ],
     users_block: [

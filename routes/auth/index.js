@@ -47,7 +47,7 @@ router.post('/auth',function (req,res,next) {
         User.findOne({token: token},function (err,user) {
             if(err)
             {
-                next(err)
+                return next(err)
             }
             else{
                 if(user == null)

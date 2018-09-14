@@ -39,7 +39,7 @@ modules.init = app => {
             User.findOne({token: token},function (err,user) {
                 if(err)
                 {
-                    next(err)
+                    return next(err)
                 }
                 else {
                     if(user == null)

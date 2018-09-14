@@ -57,7 +57,7 @@ router.post('/registration',function (req,res,next) {
     User.findOne({token: req.headers['auth-token']},function (err,user) {
         if(err)
         {
-            next(err)
+            return next(err)
         }
         else{
             let body = req.body
